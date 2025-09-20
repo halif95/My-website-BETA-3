@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="intro">
+    <h2>Сравните комплектующие для вашего ПК</h2>
+    <p>Выберите от 2 до 5 компонентов для сравнения характеристик и цен</p>
+</section>
+
+{% if error %}
+<div class="error-message">
+    <p>{{ error }}</p>
+</div>
+{% endif %}
+
+<form action="{{ url_for('compare') }}" method="post">
+    <div class="filters">
+        <div class="filter-group">
+            <label for="brand-filter">Бренд:</label>
+            <select id="brand-filter">
+                <option value="all">Все бренды</option>
+                <option value="NVIDIA">NVIDIA</option>
+                <option value="AMD">AMD</option>
+                <option value="Intel">Intel</option>
+                <option value="G.Skill">G.Skill</option>
+                <option value="Kingston">Kingston</option>
+                <option value="Samsung">Samsung</option>
+                <option value="ASUS">ASUS</option>
+                <option value="MSI">MSI</option>
+                <option value="Gigabyte">Gigabyte</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="year-filter">Год выпуска:</label>
+            <select id="year-filter">
+                <option value="all">Все годы</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
+                <option value="2017">2017</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="components-grid">
+        <!-- Видеокарты -->
+        <div class="category">
+            <h3>Видеокарты</h3>
+            {% for name, details in components.gpu.items() %}
+            <div class="component-item" data-brand="{{ details.brand }}" data-year="{{ details.release_year }}">
+                <input type="checkbox" id="gpu_{{ name|replace(' ', '_') }}" name="gpu" value="{{ name }}">
+                <label for="gpu_{{ name|replace(' ', '_') }}">
+                    <span class="brand">{{ details.brand }}</span>
+                    <span class="model">{{ details.model }}</span>
+                    <span class="spec">VRAM: {{ details.vram }}GB {{ details.memory_type }}</span>
+                    <span class="spec">Шина: {{ details.bus_width }}bit</span>
+                    <span class="spec">Год: {{ details.release_year }} <span class="year-badge">{{ details.release_year }}</span></span>
+                    <span class="price">{{ details.price }} ₽</span>
+                    <!-- Ссылка на DNS для конкретного комплектующего -->
+                    <span><a href="{{ name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a></span>
+                    <span class="rating-small">
+                        {% for i in range(details.rating) %}★{% endfor %}
+                        {% for i in range(5 - details.rating) %}☆{% endfor %}
+                    </span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Процессоры -->
+        <div class="category">
+            <h3>Процессоры</h3>
+            {% for name, details in components.cpu.items() %}
+            <div class="component-item" data-brand="{{ details.brand }}" data-year="{{ details.release_year }}">
+                <input type="checkbox" id="cpu_{{ name|replace(' ', '_') }}" name="cpu" value="{{ name }}">
+                <label for="cpu_{{ name|replace(' ', '_') }}">
+                    <span class="brand">{{ details.brand }}</span>
+                    <span class="model">{{ details.model }}</span>
+                    <span class="spec">Ядра: {{ details.cores }}, Потоки: {{ details.threads }}</span>
+                    <span class="spec">Частота: {{ details.frequency }} GHz</span>
+                    <span class="spec">Сокет: {{ details.socket }}</span>
+                    <span class="spec">Год: {{ details.release_year }} <span class="year-badge">{{ details.release_year }}</span></span>
+                    <span class="price">{{ details.price }} ₽</span>
+                    <!-- Ссылка на DNS для конкретного комплектующего -->
+                    <span><a href="{{ name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a></span>
+                    <span class="rating-small">
+                        {% for i in range(details.rating) %}★{% endfor %}
+                        {% for i in range(5 - details.rating) %}☆{% endfor %}
+                    </span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Оперативная память -->
+        <div class="category">
+            <h3>Оперативная память</h3>
+            {% for name, details in components.ram.items() %}
+            <div class="component-item" data-brand="{{ details.brand }}" data-year="{{ details.release_year }}">
+                <input type="checkbox" id="ram_{{ name|replace(' ', '_') }}" name="ram" value="{{ name }}">
+                <label for="ram_{{ name|replace(' ', '_') }}">
+                    <span class="brand">{{ details.brand }}</span>
+                    <span class="model">{{ details.model }}</span>
+                    <span class="spec">Объем: {{ details.size }}GB {{ details.type }}</span>
+                    <span class="spec">Частота: {{ details.frequency }} MHz</span>
+                    <span class="spec">Тайминги: {{ details.timing }}</span>
+                    <span class="spec">Год: {{ details.release_year }} <span class="year-badge">{{ details.release_year }}</span></span>
+                    <span class="price">{{ details.price }} ₽</span>
+                    <!-- Ссылка на DNS для конкретного комплектующего -->
+                    <span><a href="{{ name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a></span>
+                    <span class="rating-small">
+                        {% for i in range(details.rating) %}★{% endfor %}
+                        {% for i in range(5 - details.rating) %}☆{% endfor %}
+                    </span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Материнские платы -->
+        <div class="category">
+            <h3>Материнские платы</h3>
+            {% for name, details in components.motherboard.items() %}
+            <div class="component-item" data-brand="{{ details.brand }}" data-year="{{ details.release_year }}">
+                <input type="checkbox" id="motherboard_{{ name|replace(' ', '_') }}" name="motherboard" value="{{ name }}">
+                <label for="motherboard_{{ name|replace(' ', '_') }}">
+                    <span class="brand">{{ details.brand }}</span>
+                    <span class="model">{{ details.model }}</span>
+                    <span class="spec">Сокет: {{ details.socket }}</span>
+                    <span class="spec">Чипсет: {{ details.chipset }}</span>
+                    <span class="spec">Память: {{ details.memory_type }}</span>
+                    <span class="spec">Год: {{ details.release_year }} <span class="year-badge">{{ details.release_year }}</span></span>
+                    <span class="price">{{ details.price }} ₽</span>
+                    <!-- Ссылка на DNS для конкретного комплектующего -->
+                    <span><a href="{{ name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a></span>
+                    <span class="rating-small">
+                        {% for i in range(details.rating) %}★{% endfor %}
+                        {% for i in range(5 - details.rating) %}☆{% endfor %}
+                    </span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- SSD накопители -->
+        <div class="category">
+            <h3>SSD накопители</h3>
+            {% for name, details in components.ssd.items() %}
+            <div class="component-item" data-brand="{{ details.brand }}" data-year="{{ details.release_year }}">
+                <input type="checkbox" id="ssd_{{ name|replace(' ', '_') }}" name="ssd" value="{{ name }}">
+                <label for="ssd_{{ name|replace(' ', '_') }}">
+                    <span class="brand">{{ details.brand }}</span>
+                    <span class="model">{{ details.model }}</span>
+                    <span class="spec">Объем: {{ details.capacity }}GB</span>
+                    <span class="spec">Тип: {{ details.type }}</span>
+                    <span class="spec">Скорость: {{ details.read_speed }}/{{ details.write_speed }} MB/s</span>
+                    <span class="spec">Год: {{ details.release_year }} <span class="year-badge">{{ details.release_year }}</span></span>
+                    <span class="price">{{ details.price }} ₽</span>
+                    <!-- Ссылка на DNS для конкретного комплектующего -->
+                    <span><a href="{{ name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a></span>
+                    <span class="rating-small">
+                        {% for i in range(details.rating) %}★{% endfor %}
+                        {% for i in range(5 - details.rating) %}☆{% endfor %}
+                    </span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button type="submit" class="compare-btn">Сравнить выбранное</button>
+</form>
+
+<script>
+// Простой фильтр без использования внешних библиотек
+document.addEventListener('DOMContentLoaded', function() {
+    const brandFilter = document.getElementById('brand-filter');
+    const yearFilter = document.getElementById('year-filter');
+    const componentItems = document.querySelectorAll('.component-item');
+    
+    function applyFilters() {
+        const selectedBrand = brandFilter.value;
+        const selectedYear = yearFilter.value;
+        
+        componentItems.forEach(item => {
+            const itemBrand = item.getAttribute('data-brand');
+            const itemYear = item.getAttribute('data-year');
+            
+            const brandMatch = selectedBrand === 'all' || itemBrand === selectedBrand;
+            const yearMatch = selectedYear === 'all' || itemYear === selectedYear;
+            
+            if (brandMatch && yearMatch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    brandFilter.addEventListener('change', applyFilters);
+    yearFilter.addEventListener('change', applyFilters);
+});
+</script>
+{% endblock %}

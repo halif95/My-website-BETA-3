@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="about-section">
+    <div class="about-header">
+        <h2>О нас</h2>
+        <p>Информация о разработчиках этого проекта</p>
+    </div>
+
+    <div class="developers-grid">
+        <div class="developer-card" data-developer="malik">
+            <div class="developer-photo">
+                <div class="photo-placeholder" id="malik-photo">Фото</div>
+            </div>
+            <div class="developer-info">
+                <h3>Дараев Абдул-Малик</h3>
+                <p>Студент школы программирования "Алгоритмика"</p>
+                <div class="skills">
+                    <h4>Изучаемые технологии:</h4>
+                    <ul>
+                        <li>Python</li>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                    </ul>
+                </div>
+                <p class="experience">Опыт обучения: 1 год</p>
+                <button class="select-developer-btn" data-developer="malik">Выбрать для загрузки фото</button>
+            </div>
+        </div>
+
+        <div class="developer-card" data-developer="mohammad">
+            <div class="developer-photo">
+                <div class="photo-placeholder" id="mohammad-photo">Фото</div>
+            </div>
+            <div class="developer-info">
+                <h3>Лутушев Мохьмад</h3>
+                <p>Студент школы программирования "Алгоритмика"</p>
+                <div class="skills">
+                    <h4>Изучаемые технологии:</h4>
+                    <ul>
+                        <li>Python</li>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                    </ul>
+                </div>
+                <p class="experience">Опыт обучения: 1 год</p>
+                <button class="select-developer-btn" data-developer="mohammad">Выбрать для загрузки фото</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="upload-section">
+        <h3>Загрузить фото для: <span id="selected-developer">Не выбран</span></h3>
+        <form class="upload-form">
+            <input type="file" accept="image/*" class="file-input" id="photo-upload">
+            <button type="button" class="upload-btn" id="upload-button" disabled>Загрузить фото</button>
+        </form>
+        <p class="upload-note">* Фотография будет отображаться только в вашем браузере</p>
+    </div>
+
+    <div class="about-school">
+        <h3>О школе "Алгоритмика"</h3>
+        <p>Мы изучаем программирование в международной школе "Алгоритмика", где за год освоили основы Python, HTML и CSS. Этот проект - результат нашего обучения и практики.</p>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('photo-upload');
+    const uploadBtn = document.getElementById('upload-button');
+    const selectedDeveloperSpan = document.getElementById('selected-developer');
+    let selectedDeveloper = null;
+    
+    // Обработчики для выбора разработчика
+    document.querySelectorAll('.select-developer-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            selectedDeveloper = this.getAttribute('data-developer');
+            
+            // Снимаем выделение со всех карточек
+            document.querySelectorAll('.developer-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Выделяем выбранную карточку
+            this.closest('.developer-card').classList.add('selected');
+            
+            // Обновляем текст о выбранном разработчике
+            const developerName = this.closest('.developer-card').querySelector('h3').textContent;
+            selectedDeveloperSpan.textContent = developerName;
+            
+            // Активируем кнопку загрузки
+            uploadBtn.disabled = false;
+        });
+    });
+    
+    // Обработчик загрузки фото
+    uploadBtn.addEventListener('click', function() {
+        if (!selectedDeveloper) {
+            alert('Сначала выберите разработчика!');
+            return;
+        }
+        
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Сохраняем в localStorage
+                localStorage.setItem(`${selectedDeveloper}_photo`, e.target.result);
+                
+                // Обновляем отображение
+                const placeholder = document.getElementById(`${selectedDeveloper}-photo`);
+                placeholder.innerHTML = `<img src="${e.target.result}" alt="Загруженное фото">`;
+                
+                alert('Фото успешно загружено!');
+            }
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            alert('Сначала выберите файл!');
+        }
+    });
+    
+    // Проверяем, есть ли сохраненные фото при загрузке страницы
+    document.querySelectorAll('.developer-card').forEach(card => {
+        const developer = card.getAttribute('data-developer');
+        const savedPhoto = localStorage.getItem(`${developer}_photo`);
+        if (savedPhoto) {
+            const placeholder = document.getElementById(`${developer}-photo`);
+            placeholder.innerHTML = `<img src="${savedPhoto}" alt="Загруженное фото">`;
+        }
+    });
+});
+</script>
+{% endblock %}

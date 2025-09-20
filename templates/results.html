@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="results-header">
+    <h2>Результаты сравнения</h2>
+    <p>Сравнительная таблица выбранных комплектующих</p>
+</section>
+
+<div class="comparison-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Параметр</th>
+                {% for component in components %}
+                <th>
+                    {{ component.name }}<br>
+                    <a href="{{ component.name | dns_search }}" class="dns-link" target="_blank" rel="noopener">Купить в DNS</a>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Тип</td>
+                {% for component in components %}
+                <td>{{ component.type }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Бренд</td>
+                {% for component in components %}
+                <td>{{ component.brand }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Модель</td>
+                {% for component in components %}
+                <td>{{ component.model }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Год выпуска</td>
+                {% for component in components %}
+                <td>{{ component.release_year }}</td>
+                {% endfor %}
+            </tr>
+            
+            <!-- GPU специфичные параметры -->
+            {% if components[0].type == 'GPU' or components|selectattr('type', 'equalto', 'GPU')|list|length > 0 %}
+            <tr>
+                <td>Видеопамять</td>
+                {% for component in components %}
+                <td>{% if component.type == 'GPU' %}{{ component.vram }} GB{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Тип памяти</td>
+                {% for component in components %}
+                <td>{% if component.type == 'GPU' %}{{ component.memory_type }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Ширина шины</td>
+                {% for component in components %}
+                <td>{% if component.type == 'GPU' %}{{ component.bus_width }} bit{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            
+            <!-- CPU специфичные параметры -->
+            {% if components[0].type == 'CPU' or components|selectattr('type', 'equalto', 'CPU')|list|length > 0 %}
+            <tr>
+                <td>Ядра/Потоки</td>
+                {% for component in components %}
+                <td>{% if component.type == 'CPU' %}{{ component.cores }}/{{ component.threads }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Частота</td>
+                {% for component in components %}
+                <td>{% if component.type == 'CPU' %}{{ component.frequency }} GHz{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Сокет</td>
+                {% for component in components %}
+                <td>{% if component.type == 'CPU' %}{{ component.socket }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            
+            <!-- RAM специфичные параметры -->
+            {% if components[0].type == 'RAM' or components|selectattr('type', 'equalto', 'RAM')|list|length > 0 %}
+            <tr>
+                <td>Объем памяти</td>
+                {% for component in components %}
+                <td>{% if component.type == 'RAM' %}{{ component.size }} GB{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Тип памяти</td>
+                {% for component in components %}
+                <td>{% if component.type == 'RAM' %}{{ component.type }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Частота</td>
+                {% for component in components %}
+                <td>{% if component.type == 'RAM' %}{{ component.frequency }} MHz{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Тайминги</td>
+                {% for component in components %}
+                <td>{% if component.type == 'RAM' %}{{ component.timing }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            
+            <!-- Motherboard специфичные параметры -->
+            {% if components[0].type == 'MOTHERBOARD' or components|selectattr('type', 'equalto', 'MOTHERBOARD')|list|length > 0 %}
+            <tr>
+                <td>Сокет</td>
+                {% for component in components %}
+                <td>{% if component.type == 'MOTHERBOARD' %}{{ component.socket }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Чипсет</td>
+                {% for component in components %}
+                <td>{% if component.type == 'MOTHERBOARD' %}{{ component.chipset }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Тип памяти</td>
+                {% for component in components %}
+                <td>{% if component.type == 'MOTHERBOARD' %}{{ component.memory_type }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            
+            <!-- SSD специфичные параметры -->
+            {% if components[0].type == 'SSD' or components|selectattr('type', 'equalto', 'SSD')|list|length > 0 %}
+            <tr>
+                <td>Емкость</td>
+                {% for component in components %}
+                <td>{% if component.type == 'SSD' %}{{ component.capacity }} GB{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Тип накопителя</td>
+                {% for component in components %}
+                <td>{% if component.type == 'SSD' %}{{ component.type }}{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Скорость чтения/записи</td>
+                {% for component in components %}
+                <td>{% if component.type == 'SSD' %}{{ component.read_speed }}/{{ component.write_speed }} MB/s{% else %}-{% endif %}</td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            
+            <tr class="price-row">
+                <td>Цена</td>
+                {% for component in components %}
+                <td>{{ component.price }} ₽</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td>Рейтинг</td>
+                {% for component in components %}
+                <td>
+                    <div class="rating">
+                        {% for i in range(component.rating) %}★{% endfor %}
+                        {% for i in range(5 - component.rating) %}☆{% endfor %}
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="dns-promo">
+    <h3>Готовы собрать свой ПК?</h3>
+    <p>Все выбранные комплектующие можно приобрести в DNS</p>
+    <a href="https://www.dns-shop.ru/" target="_blank" class="dns-button">Перейти в DNS</a>
+</div>
+
+<a href="{{ url_for('index') }}" class="back-link">← Вернуться к выбору компонентов</a>
+{% endblock %}
